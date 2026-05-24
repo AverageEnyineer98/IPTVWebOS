@@ -42,6 +42,7 @@
   let currentChannelIndex = -1, currentRegion = 'all', currentCategory = 'all';
   let hlsInstance = null, osdTimeout = null, sidebarOpen = true;
   let favorites = JSON.parse(localStorage.getItem('iptv_favs') || '[]');
+  let watchHistory = JSON.parse(localStorage.getItem('iptv_history') || '[]');
   let lastChannel = parseInt(localStorage.getItem('iptv_last') || '-1');
   let subtitlesOn = true, retryCount = 0, retryTimer = null;
   let channelHistory = [];
@@ -174,10 +175,14 @@
   function applyFilters() {
     filteredChannels = allChannels.filter(ch => {
       if (currentRegion === 'fav') return isFav(ch);
+      if (currentRegion === 'hist') return watchHistory.includes(ch.name);
       if (currentRegion !== 'all' && ch.region !== currentRegion) return false;
       if (currentCategory !== 'all' && ch.group !== currentCategory) return false;
       return true;
     });
+    if (currentRegion === 'hist') {
+      filteredChannels.sort((a, b) => watchHistory.indexOf(a.name) - watchHistory.indexOf(b.name));
+    }
     buildCategories(); renderChannelList();
     if (filteredChannels.length > 0) {
       chIdx = 0;

@@ -7,7 +7,16 @@
     "proxy": "node proxy.js",
     "build": "echo 'Static app - no build step needed'"
   },
-  "keywords": ["webos", "iptv", "m3u", "hls"],
+  "keywords": [
+    "webos",
+    "iptv",
+    "m3u",
+    "hls"
+  ],
   "author": "Wilson",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "puppeteer": "^25.0.4",
+    "serve": "^14.2.6"
+  }
 }

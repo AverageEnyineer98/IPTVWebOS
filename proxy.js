@@ -9,25 +9,36 @@
 const http = require('http');
 const https = require('https');
 const url = require('url');
-const path = require('path');
 
 const PORT = 8889;
 const HOST = '0.0.0.0';
 
+// Global Keep-Alive Agents to prevent connection drops
+const httpAgent = new http.Agent({ keepAlive: true, maxSockets: 100, keepAliveMsecs: 15000 });
+const httpsAgent = new https.Agent({ keepAlive: true, maxSockets: 100, keepAliveMsecs: 15000 });
+
 // ---- Helpers ----
-function fetchRemote(targetUrl, headers = {}) {
+function fetchRemote(targetUrl, headers = {}, retryCount = 0) {
   return new Promise((resolve, reject) => {
     const parsed = new URL(targetUrl);
     const client = parsed.protocol === 'https:' ? https : http;
+    const agent = parsed.protocol === 'https:' ? httpsAgent : httpAgent;
 
     const options = {
       hostname: parsed.hostname,
       port: parsed.port || (parsed.protocol === 'https:' ? 443 : 80),
       path: parsed.pathname + parsed.search,
       method: 'GET',
+      agent: agent,
       headers: {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
         'Accept': '*/*',
+        // Geo-block bypass: Spoof China IP for CCTV channels
+        'X-Forwarded-For': '114.114.114.114',
+        'Client-IP': '114.114.114.114',
+        'Connection': 'keep-alive',
+        // Optional referer matching host to bypass basic referer checks
+        'Referer': `${parsed.protocol}//${parsed.hostname}/`,
         ...headers,
       },
       timeout: 15000,
@@ -36,8 +47,11 @@ function fetchRemote(targetUrl, headers = {}) {
     const req = client.request(options, (res) => {
       // Follow redirects
       if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
+        if (retryCount >= 5) {
+          return reject(new Error('Too many redirects'));
+        }
         const redirectUrl = new URL(res.headers.location, targetUrl).href;
-        fetchRemote(redirectUrl, headers).then(resolve).catch(reject);
+        fetchRemote(redirectUrl, headers, retryCount + 1).then(resolve).catch(reject);
         return;
       }
 
@@ -52,11 +66,26 @@ function fetchRemote(targetUrl, headers = {}) {
       });
     });
 
-    req.on('error', reject);
+    req.on('error', (err) => {
+        if (retryCount < 3) {
+            // Retry on socket hang up or ECONNRESET for TS segments
+            setTimeout(() => {
+                fetchRemote(targetUrl, headers, retryCount + 1).then(resolve).catch(reject);
+            }, 500);
+        } else {
+            reject(err);
+        }
+    });
+
     req.on('timeout', () => {
       req.destroy();
-      reject(new Error('Request timeout'));
+      if (retryCount < 3) {
+        fetchRemote(targetUrl, headers, retryCount + 1).then(resolve).catch(reject);
+      } else {
+        reject(new Error('Request timeout'));
+      }
     });
+    
     req.end();
   });
 }
@@ -159,12 +188,14 @@ const server = http.createServer(async (req, res) => {
         res.writeHead(200, {
           'Content-Type': 'application/vnd.apple.mpegurl',
           'Cache-Control': 'no-cache',
+          'Connection': 'keep-alive'
         });
         res.end(rewritten);
       } else {
         // Pass through binary content (TS segments, keys, etc.)
         const headers = {
           'Content-Type': contentType || 'application/octet-stream',
+          'Connection': 'keep-alive'
         };
         if (remote.headers['content-length']) {
           headers['Content-Length'] = remote.headers['content-length'];
