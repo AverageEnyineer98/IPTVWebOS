@@ -1,0 +1,13 @@
+{
+  "name": "webos-iptv-player",
+  "version": "1.0.0",
+  "description": "IPTV Player for LG webOS TV - China & Hong Kong Channels",
+  "scripts": {
+    "dev": "npx serve . -l 8888 --no-clipboard",
+    "proxy": "node proxy.js",
+    "build": "echo 'Static app - no build step needed'"
+  },
+  "keywords": ["webos", "iptv", "m3u", "hls"],
+  "author": "Wilson",
+  "license": "MIT"
+}

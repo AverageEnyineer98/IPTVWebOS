@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1920, height=1080, initial-scale=1.0">
+  <meta name="description" content="IPTV Player for LG webOS TV - Watch China and Hong Kong channels">
+  <title>IPTV Player - 電視直播</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Loading Splash -->
+  <div id="splash-screen" class="splash-screen">
+    <div class="splash-content">
+      <div class="splash-icon">📺</div>
+      <div class="splash-title">電視直播</div>
+      <div class="splash-subtitle">正在載入頻道列表...</div>
+      <div class="splash-loader">
+        <div class="loader-bar"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main App Container -->
+  <div id="app" class="app hidden">
+    <!-- Sidebar Channel List (LEFT SIDE) -->
+    <div id="sidebar" class="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-title">📺 電視直播</div>
+        <div class="sidebar-count" id="channel-count">0 個頻道</div>
+      </div>
+
+      <!-- Region Tabs -->
+      <div class="region-tabs" id="region-tabs">
+        <button class="region-tab active" data-region="all" id="tab-all">全部</button>
+        <button class="region-tab" data-region="hk" id="tab-hk">香港</button>
+        <button class="region-tab" data-region="cn" id="tab-cn">中國</button>
+        <button class="region-tab" data-region="fav" id="tab-fav">⭐ 收藏</button>
+      </div>
+
+      <!-- Category Filter -->
+      <div class="category-filter" id="category-filter">
+        <button class="category-btn active" data-category="all" id="cat-all">全部</button>
+      </div>
+
+      <!-- Channel List -->
+      <div class="channel-list-container" id="channel-list-container">
+        <ul class="channel-list" id="channel-list">
+          <!-- Channels will be injected here -->
+        </ul>
+      </div>
+
+      <!-- Sidebar Footer Help -->
+      <div class="sidebar-footer">
+        <span class="help-item"><span class="key-badge">OK</span> 選擇</span>
+        <span class="help-item"><span class="key-badge">返回</span> 上層</span>
+        <span class="help-item"><span class="key-badge key-yellow">黃</span> 收藏</span>
+      </div>
+    </div>
+
+    <!-- Video Player Area -->
+    <div id="player-area" class="player-area">
+      <video id="video-player" autoplay playsinline></video>
+
+      <!-- Channel Info OSD (top-left on channel switch) -->
+      <div id="channel-osd" class="channel-osd hidden">
+        <div class="osd-header">
+          <img id="osd-logo" class="osd-logo" src="" alt="" onerror="this.style.display='none'">
+          <div class="osd-text">
+            <div class="osd-top-row">
+              <span id="osd-number" class="osd-number"></span>
+              <span id="osd-name" class="osd-name"></span>
+              <span id="osd-quality" class="osd-quality"></span>
+            </div>
+            <div id="osd-programme" class="osd-programme"></div>
+            <div id="osd-time" class="osd-time"></div>
+          </div>
+        </div>
+        <div id="osd-progress" class="osd-progress">
+          <div id="osd-progress-bar" class="osd-progress-bar"></div>
+        </div>
+      </div>
+
+      <!-- Error / Buffering Overlay -->
+      <div id="player-status" class="player-status hidden">
+        <div id="status-icon" class="status-icon">⏳</div>
+        <div id="status-text" class="status-text">正在載入...</div>
+        <div id="retry-info" class="retry-info hidden"></div>
+      </div>
+
+      <!-- Subtitle Toggle Indicator -->
+      <div id="subtitle-indicator" class="subtitle-indicator hidden">
+        <span id="subtitle-icon">CC</span>
+        <span id="subtitle-label">字幕: 開啟</span>
+      </div>
+
+      <!-- Mini controls hint (shown when sidebar closed) -->
+      <div id="controls-hint" class="controls-hint">
+        <span>◀ 頻道列表</span>
+        <span>▲▼ 切換頻道</span>
+        <span>OK 資訊</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="toast hidden"></div>
+
+  <!-- hls.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.17/dist/hls.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
