@@ -1,0 +1,9 @@
+{
+  "id": "com.wilson.iptvplayer.proxy",
+  "description": "HelloWorld Service",
+  "services": [
+    {
+      "name": "com.wilson.iptvplayer.proxy"
+    }
+  ]
+}

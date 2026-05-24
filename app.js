@@ -7,7 +7,7 @@
   'use strict';
 
   // ---- Config ----
-  const PROXY_BASE = 'http://localhost:8889';
+  const PROXY_BASE = 'http://127.0.0.1:8889';
   const M3U_SOURCES = [
     { region: 'hk', label: '香港', url: 'https://iptv-org.github.io/iptv/countries/hk.m3u' },
     { region: 'cn', label: '中國', url: 'https://iptv-org.github.io/iptv/countries/cn.m3u' },
@@ -444,6 +444,20 @@
   // ---- Init ----
   async function init() {
     try {
+      // Connect to proxy service
+      if (window.webOS && window.webOS.service) {
+        window.webOS.service.request('luna://com.wilson.iptvplayer.proxy', {
+          method: 'start',
+          parameters: {},
+          onSuccess: function (args) {
+            console.log("Proxy service started:", args.message);
+          },
+          onFailure: function (args) {
+            console.log("Failed to start proxy service:", args.errorText);
+          }
+        });
+      }
+
       allChannels = await fetchAllChannels();
       console.log('Loaded ' + allChannels.length + ' channels');
       filteredChannels = [...allChannels];
