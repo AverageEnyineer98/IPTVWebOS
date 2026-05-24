@@ -12,11 +12,10 @@
   var PROXY_PORT = 8889;
   var PROXY_BASE = 'http://127.0.0.1:' + PROXY_PORT;
   var M3U_SOURCES = [
-    { region: 'hk', label: '香港', url: 'https://iptv-org.github.io/iptv/countries/hk.m3u' },
     { region: 'cn', label: '中國', url: 'https://iptv-org.github.io/iptv/countries/cn.m3u' },
   ];
-  var MAX_RETRIES = 5;
-  var RETRY_DELAYS = [3000, 5000, 8000, 12000, 20000];
+  var MAX_RETRIES = 6;
+  var RETRY_DELAYS = [1500, 3000, 5000, 8000, 12000, 20000];
   var PROXY_HEALTH_TIMEOUT = 30000; // max ms to wait for proxy
   var PROXY_HEALTH_INTERVAL = 500;  // poll interval
 
@@ -378,20 +377,32 @@
       hlsInstance = new Hls({
         enableWorker: true,
         lowLatencyMode: false,
-        maxBufferLength: 30,
-        maxMaxBufferLength: 60,
-        startLevel: -1,
-        fragLoadingTimeOut: 25000,
-        manifestLoadingTimeOut: 25000,
-        levelLoadingTimeOut: 25000,
-        maxLoadingDelay: 10,
-        maxBufferHole: 1.5,
-        fragLoadingMaxRetry: 6,
-        manifestLoadingMaxRetry: 4,
-        levelLoadingMaxRetry: 4,
-        fragLoadingRetryDelay: 2000,
-        manifestLoadingRetryDelay: 2000,
-        levelLoadingRetryDelay: 2000,
+        // Buffer: keep enough to stay smooth, not too much to waste memory
+        maxBufferLength: 15,
+        maxMaxBufferLength: 30,
+        maxBufferSize: 30 * 1000 * 1000, // 30MB max buffer
+        // Start with lowest level for fastest initial connection
+        startLevel: 0,
+        // Aggressive timeouts for fast failure detection
+        fragLoadingTimeOut: 15000,
+        manifestLoadingTimeOut: 12000,
+        levelLoadingTimeOut: 12000,
+        maxLoadingDelay: 4,
+        maxBufferHole: 0.5,
+        // Retry settings
+        fragLoadingMaxRetry: 4,
+        manifestLoadingMaxRetry: 3,
+        levelLoadingMaxRetry: 3,
+        fragLoadingRetryDelay: 1000,
+        manifestLoadingRetryDelay: 1000,
+        levelLoadingRetryDelay: 1000,
+        // ABR: switch up quickly once stable
+        abrEwmaDefaultEstimate: 500000,
+        abrBandWidthUpFactor: 0.7,
+        // Stability
+        backBufferLength: 30,
+        liveDurationInfinity: true,
+        liveBackBufferLength: 15,
       });
       hlsInstance.loadSource(url);
       hlsInstance.attachMedia(video);
