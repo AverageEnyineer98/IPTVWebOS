@@ -62,6 +62,7 @@ function fetchRemote(targetUrl, headers = {}, retryCount = 0) {
           statusCode: res.statusCode,
           headers: res.headers,
           body: Buffer.concat(chunks),
+          finalUrl: targetUrl,
         });
       });
     });
@@ -183,6 +184,7 @@ const server = http.createServer(async (req, res) => {
       if (isM3U8) {
         // Rewrite M3U8 playlist URLs
         const bodyText = remote.body.toString('utf-8');
+        console.log("Rewriting M3U8 for finalUrl:", remote.finalUrl);
         const rewritten = rewriteM3U8(bodyText, remote.finalUrl, proxyBase);
 
         res.writeHead(200, {
@@ -204,7 +206,7 @@ const server = http.createServer(async (req, res) => {
         res.end(remote.body);
       }
     } catch (err) {
-      console.error(`Proxy error for ${targetUrl}:`, err.message);
+      console.error(`Proxy error for ${targetUrl}:`, err.stack || err.message);
       res.writeHead(502, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ error: 'Proxy fetch failed', detail: err.message }));
     }

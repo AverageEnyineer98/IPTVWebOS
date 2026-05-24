@@ -385,9 +385,9 @@
         currentCategory = btns[catIdx].dataset.category;
         btns.forEach(b => b.classList.remove('active')); btns[catIdx].classList.add('active');
         applyFilters(); navZone = 'channels'; chIdx = 0; focusCh(0); break;
-      case KEY.UP: case KEY.BACK: case KEY.BACKSPACE: // Go up to tabs
-        navZone = 'tabs'; focusTab(tabIdx); break;
+      case KEY.UP: navZone = 'tabs'; focusTab(tabIdx); break;
       case KEY.DOWN: navZone = 'channels'; focusCh(chIdx); break;
+      case KEY.BACK: case KEY.BACKSPACE: navZone = 'tabs'; focusTab(tabIdx); break;
     }
   }
 
@@ -395,7 +395,10 @@
     const items = chListEl.querySelectorAll('.channel-item');
     if (items.length === 0) return;
     switch (kc) {
-      case KEY.UP: if (chIdx > 0) focusCh(--chIdx); break;
+      case KEY.UP: 
+        if (chIdx > 0) focusCh(--chIdx); 
+        else { navZone = 'categories'; focusCat(catIdx); }
+        break;
       case KEY.DOWN: if (chIdx < items.length-1) focusCh(++chIdx); break;
       case KEY.ENTER:
         const ci = parseInt(items[chIdx].dataset.channelIndex);
@@ -403,6 +406,7 @@
       case KEY.BACK: case KEY.BACKSPACE: // Go up to categories
         navZone = 'categories'; focusCat(catIdx); break;
       case KEY.LEFT: closeSidebar(); break;
+      case KEY.RIGHT: closeSidebar(); break;
     }
   }
 
