@@ -183,7 +183,7 @@ const server = http.createServer(async (req, res) => {
       if (isM3U8) {
         // Rewrite M3U8 playlist URLs
         const bodyText = remote.body.toString('utf-8');
-        const rewritten = rewriteM3U8(bodyText, targetUrl, proxyBase);
+        const rewritten = rewriteM3U8(bodyText, remote.finalUrl, proxyBase);
 
         res.writeHead(200, {
           'Content-Type': 'application/vnd.apple.mpegurl',
