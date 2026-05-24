@@ -1,0 +1,12 @@
+node_modules/
+.git/
+.gitignore
+*.ipk
+proxy.js
+test.js
+test-cctv.js
+test-all-devtools.js
+setup_tv.exp
+package-lock.json
+ProjectProgressMemory.md
+README.md

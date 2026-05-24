@@ -1,11 +1,11 @@
 {
   "name": "com.wilson.iptvplayer.proxy",
   "version": "1.0.0",
-  "description": "Helloworld service",
+  "description": "IPTV HLS CORS Proxy Service for webOS",
   "main": "proxy_service.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
+  "author": "Wilson",
   "license": "BSD"
 }

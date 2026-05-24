@@ -1,6 +1,6 @@
 {
   "id": "com.wilson.iptvplayer.proxy",
-  "description": "HelloWorld Service",
+  "description": "IPTV HLS CORS Proxy Service",
   "services": [
     {
       "name": "com.wilson.iptvplayer.proxy"

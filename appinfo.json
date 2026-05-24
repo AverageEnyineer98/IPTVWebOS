@@ -1,6 +1,6 @@
 {
   "id": "com.wilson.iptvplayer",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "vendor": "Wilson",
   "type": "web",
   "main": "index.html",
@@ -11,5 +11,8 @@
   "bgColor": "#0a0a1a",
   "transparent": false,
   "handlesRelaunch": false,
-  "disableBackHistoryAPI": true
+  "disableBackHistoryAPI": true,
+  "requiredPermissions": [
+    "all"
+  ]
 }
